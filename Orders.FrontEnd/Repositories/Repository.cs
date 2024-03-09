@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
+using System.Net.Http;
 
 namespace Orders.FrontEnd.Repositories
 {
@@ -31,15 +32,27 @@ namespace Orders.FrontEnd.Repositories
 
         }
 
-        
-        public Task<HttpResponseWrapper<object>> PostAsync<T>(string url, T model)
+        public async Task<HttpResponseWrapper<object>> PostAsync<T>(string url, T model)
         {
-            throw new NotImplementedException();
+            var messageJSON = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJSON, Encoding.UTF8, "application/json");
+            var httpResponse = await _httpClient.PostAsync(url, messageContent);
+            return new HttpResponseWrapper<object>(null, !httpResponse.IsSuccessStatusCode, httpResponse);
         }
 
-        public Task<HttpResponseWrapper<TActionResponse>> PostAsync<T, TActionResponse>(string url, T model)
+        public async Task<HttpResponseWrapper<TActionResponse>> PostAsync<T, TActionResponse>(string url, T model)
         {
-            throw new NotImplementedException();
+            var messageJSON = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJSON, Encoding.UTF8, "application/json");
+
+            var httpResponse = await _httpClient.PostAsync(url, messageContent);
+            if (httpResponse.IsSuccessStatusCode) 
+            {
+                var response = await UnserializeAnswer<TActionResponse>(httpResponse);
+                return new HttpResponseWrapper<TActionResponse>(response, false, httpResponse);
+            }
+
+            return new HttpResponseWrapper<TActionResponse>(default,!httpResponse.IsSuccessStatusCode,httpResponse);
         }
 
         private async Task<T> UnserializeAnswer<T>(HttpResponseMessage httpResponse)
