@@ -1,18 +1,17 @@
 ﻿@typeparam Titem;
+
 @if (Mylist is null)
 {
     if (Loading is null)
     {
-        <div class="d-flex justify-content-center align-items-center">
-            <img src="https://img.pikbest.com/png-images/20190918/cartoon-snail-loading-loading-gif-animation_2734139.png!bw700" />
-        </div>
+        <p>Procesando...</p>
     }
     else
     {
         @Loading
     }
 }
-else if(Mylist.Count == 0)
+else if (Mylist.Count == 0)
 {
     @if (NoRecords is null)
     {
@@ -25,23 +24,5 @@ else if(Mylist.Count == 0)
 }
 else
 {
-    @Body    
-}
-
-
-@code {
-
-    [Parameter]
-    public RenderFragment? Loading { get; set; }
-
-    [Parameter]
-    public RenderFragment? NoRecords { get; set; }
-
-    [EditorRequired]
-    [Parameter]
-    public RenderFragment Body { get; set; } = null!;
-
-    [EditorRequired]
-    [Parameter]
-    public List<Titem> Mylist { get; set; } = null!;
+    @Body
 }
